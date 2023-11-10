@@ -1,43 +1,46 @@
-const express = require("express")
-const cors = require("cors")
-const helmet = require("helmet")
-const path = require("path")
-const http = require("http")
-const https = require("https")
-const { router } =  require("bapig")
-const {databaseConnectionWithRetry } = require("./config/server")
-const fileUploader = require('express-fileupload')
-// const route = require('./routes/search')
+// Import the express module
+const express = require('express');
+const mongoose = require('mongoose')
+const User = require('./models/user')
+const {databaseConnectionWithRetry} = require('./utils/database')
 
-/* express initialization */
-const application = express()
+// Create an Express application
+const app = express();
 
-/* expess package config */
-application.use(fileUploader());
-application.use(cors())
-application.use(helmet())
-application.use(express.json())
-application.use('/api', router)
-// application.use('/', route)
-application.use(express.static(path.join(__dirname, 'public')))
+//connect database
 
+ const connectDB = async() =>{
+    mongoose.set('strictQuery', true)
 
+    // if(isconnected){
+    //     console.log('database already connected')
+    //     return;
+    // }
 
+    try {
+        await mongoose.connect('mongodb+srv://hapson:7iCTcZ5Xa7A2eMQ@spems.p0xp0gn.mongodb.net/',{
+            dbName: 'SAPS',
+            // useNewUrlParser: true,
+            // useUnifiedTopology: true
+        })
 
-const serverInformation = {
-    port: 4000,
-    domain: "spems.shop",
-    environment: "development"
+        // isconnected = true
+
+        console.log('database connected')
+    } catch (error) {
+        console.log(error)
+    }
 }
+// Define a route that sends "Hello, World!" as the response
+app.get('/api', (req, res) => {
+  const user = User.find();
+  res.send(user);
+});
 
-/* options use for live server only */
-const httpsOptions = {
-    cert: serverInformation.environment === 'development' ? '' : fs.readFileSync(`/etc/letsencrypt/live/${serverInformation.domain}/fullchain.pem`),
-    key: serverInformation.environment === 'development' ? '' : fs.readFileSync(`/etc/letsencrypt/live/${serverInformation.domain}/privkey.pem`)
-}
-/* server */
-const server = serverInformation.environment === 'development' ? http.createServer(application) : https.createServer(httpsOptions, application)
+// Set the app to listen on port 3000
+const port = 4000;
+app.listen(port, () => {
+  console.log(`Server is listening at http://localhost:${port}`);
+});
 
-/* initialize database connection */
-databaseConnectionWithRetry(server, serverInformation.port)
-
+connectDB();
