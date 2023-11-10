@@ -5,6 +5,11 @@
   "main": "index.js",
   "scripts": {
     "dev" : "nodemon index.js",
+    "build": "npm install --production && npm run start",
+    "rebuild": "npm instal --production && npm run restart",
+    "start": "pm2 start index.js --name 161.35.13.187 && pm2 save",
+    "restart": "pm2 restart 161.35.13.187 && pm2 save",
+    "stop": "pm2 delete 161.35.13.187 && pm2 save",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
