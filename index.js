@@ -12,7 +12,7 @@ app.get('/api', (req, res) => {
 });
 
 // Set the app to listen on port 3000
-const port = 4000;
+const port = 6262;
 app.listen(port, () => {
   console.log(`Server is listening at http://localhost:${port}`);
 });
